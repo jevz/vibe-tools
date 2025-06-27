@@ -125,7 +125,7 @@ flowchart TD
     db[PostgreSQL Managed - RDS]
 
     user -->|HTTPS| reverseProxy
-    cloudflare --> frontend
+    reverseProxy --> frontend
     frontend --> api
     api --> db
     api --> redis
