@@ -112,3 +112,41 @@ When hosted in the cloud (e.g. AWS, Azure, GCP), the system architecture could l
 ### CI/CD:
 * Infrastructure as Code (IaC) via Terraform or AWS CDK
 * GitHub Actions/GitLab CI for automated Docker builds, tests, and deployments
+
+### Interaction/Service Flowchart
+
+```mermaid
+flowchart TD
+    user[User / Browser]
+    reverseProxy[Cloudflare / WAF / Load Balancer]
+    frontend[Frontend Container\nNext.js - ECS/GKE/EC2]
+    api[API Container\n.NET Core - ECS/GKE/EC2]
+    redis[Redis Managed - ElastiCache]
+    db[PostgreSQL Managed - RDS]
+
+    user -->|HTTPS| reverseProxy
+    cloudflare --> frontend
+    frontend --> api
+    api --> db
+    api --> redis
+```
+
+### Infrastructure Flowchart
+```mermaid
+flowchart TD
+    reverseProxy[Cloudflare / WAF / Load Balancer]
+    redis[Redis Managed - ElastiCache]
+    db[PostgreSQL Managed - RDS]
+    secrets[Secrets Manager AWS Secrets Manager]
+    ci[CI/CD GitHub Actions / GitLab CI]
+    iac[Infrastructure as Code Terraform/CDK]
+    containers[EC2 / GKE]
+
+    secrets --> ci
+    ci --> iac
+    
+    iac -->  reverseProxy
+    iac -->  containers
+    iac -->  db
+    iac -->  redis
+```
