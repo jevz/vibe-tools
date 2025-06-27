@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: vibetools-db
+    environment:
+      POSTGRES_USER: vibetools
+      POSTGRES_PASSWORD: vibetools123
+      POSTGRES_DB: vibetools
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+        
+  redis:
+    image: redis:7
+    container_name: vibetools-redis
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: vibetools-api
+    container_name: vibetools-api
+    ports:
+      - '5000:5000'
+    environment:
+      ASPNETCORE_URLS: 'http://+:5000'
+      ConnectionStrings__DefaultConnection: 'Host=db;Port=5432;Database=vibetools;Username=vibetools;Password=vibetools123'
+      Redis__ConnectionString: redis:6379
+    depends_on:
+      - db
+      - redis
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      target: runner
+      args:
+        NEXT_PUBLIC_API_BASE: 'http://localhost:5000'
+    image: vibetools-web
+    container_name: vibetools-web
+    ports:
+      - '3000:3000'
+    environment:
+      NEXT_PUBLIC_API_BASE: 'http://localhost:5000'
+    depends_on:
+      - api
+
+volumes:
+  pg-data: {}

@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\VibeTools.Api.props" />
+</Project>
