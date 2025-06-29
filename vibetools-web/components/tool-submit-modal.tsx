@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { submitTool } from '@/lib/api';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import {useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {submitTool} from '@/lib/api';
+import {Input} from '@/components/ui/input';
+import {Textarea} from '@/components/ui/textarea';
+import {Button} from '@/components/ui/button';
+import {Label} from '@/components/ui/label';
 import {
     Dialog,
     DialogContent,
@@ -15,7 +15,7 @@ import {
     DialogDescription,
     DialogFooter,
 } from '@/components/ui/dialog';
-import {Tool} from "@/types";
+import {Tool, ToolCreateErrors} from "@/types";
 
 export default function ToolSubmitModal() {
     const router = useRouter();
@@ -25,6 +25,7 @@ export default function ToolSubmitModal() {
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
     const [createdTool, setCreatedTool] = useState<Tool | null>(null);
+    const [errors, setErrors] = useState<ToolCreateErrors>({});
 
     // If modal closed, navigate back
     const handleOpenChange = (isOpen: boolean) => {
@@ -33,13 +34,33 @@ export default function ToolSubmitModal() {
     };
 
     const handleSubmit = async () => {
-        setLoading(true);
+        const newErrors: typeof errors = {};
+
+        if (!name.trim()) {
+            newErrors.name = 'Name cannot be empty.';
+        }
+
+        if (!description.trim()) {
+            newErrors.name = 'Description cannot be empty.';
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
         try {
-            const tool = await submitTool({ name, description });
+            setLoading(true);
+            const tool = await submitTool({name, description});
             setCreatedTool(tool)
+            setErrors({});
             setSubmitted(true);
-        } catch (err) {
-            console.error('Submission failed', err);
+        } catch (error:any) {
+            if (error?.response?.status === 400 && error.response.data) {
+                setErrors(error.response.data);
+            } else {
+                setErrors({server: 'Something went wrong. Please try again.'});
+            }
         } finally {
             setLoading(false);
         }
@@ -71,9 +92,9 @@ export default function ToolSubmitModal() {
                                 placeholder="Tool Name"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                required
                                 disabled={loading}
                             />
+                            {errors.name && <p className="text-red-600 text-sm mt-2">{errors.name}</p>}
                         </div>
 
                         <div>
@@ -85,10 +106,12 @@ export default function ToolSubmitModal() {
                                 placeholder="Tool Description"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                required
                                 disabled={loading}
                             />
+                            {errors.description && <p className="text-red-600 text-sm mt-2">{errors.description}</p>}
                         </div>
+
+                        {errors.server && <p className="text-red-600 text-sm mt-2">{errors.server}</p>}
 
                         <DialogFooter>
                             <Button

@@ -1,3 +1,5 @@
+using FluentValidation;
+using VibeTools.Api.Helpers;
 using VibeTools.Api.Interfaces;
 using VibeTools.Api.Models;
 
@@ -19,8 +21,16 @@ public static class ToolRoutes
             return tool is not null ? Results.Ok(tool) : Results.NotFound();
         });
 
-        app.MapPost("/tools", async (Tool tool, IToolRepository repo) =>
+        app.MapPost("/tools", async (Tool tool, IToolRepository repo, IValidator<Tool> validator) =>
         {
+            tool = new Tool();
+            var validationResult = await validator.ValidateAsync(tool);
+            if (!validationResult.IsValid)
+            {
+                var errors = ValidationHelper.ConvertValidationResultToCamelCaseDict(validationResult);
+                return Results.BadRequest(errors);
+            }
+
             var created = await repo.AddToolAsync(tool);
             return Results.Created($"/tools/{created.Id}", created);
         });

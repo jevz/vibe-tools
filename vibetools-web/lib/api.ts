@@ -24,6 +24,17 @@ export async function submitTool(data: { name: string; description: string }): P
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data),
     });
+
+    if (!res.ok) {
+        const body = await res.json();
+        throw {
+            response: {
+                status: res.status,
+                data: body
+            }
+        };
+    }
+
     return res.json();
 }
 
@@ -33,5 +44,16 @@ export async function submitReview(toolId: number, data: { rating: number; comme
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data),
     });
+
+    if (!res.ok) {
+        const body = await res.json();
+        throw {
+            response: {
+                status: res.status,
+                data: body
+            }
+        };
+    }
+
     return res.json();
 }

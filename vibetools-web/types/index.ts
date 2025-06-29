@@ -16,3 +16,15 @@ export interface Tool {
     hidden: boolean;
     reviews?: Review[];
 }
+
+export interface ToolCreateErrors {
+    name?: string;
+    description?: string;
+    server?: string
+}
+
+export interface ReviewCreateErrors {
+    comment?: string;
+    rating?: string;
+    server?: string
+}

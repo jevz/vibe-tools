@@ -159,3 +159,10 @@ C:\Users\User\RiderProjects\VibeTools.Api\VibeTools.Api\obj\Debug\net8.0\VibeToo
 C:\Users\User\RiderProjects\VibeTools.Api\VibeTools.Api\obj\Debug\net8.0\ref\VibeTools.Api.dll
 C:\Users\User\RiderProjects\VibeTools.Api\VibeTools.Api\bin\Debug\net8.0\Npgsql.dll
 C:\Users\User\RiderProjects\VibeTools.Api\VibeTools.Api\bin\Debug\net8.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
+C:\Users\User\RiderProjects\VibeTools.Api\VibeTools.Api\bin\Debug\net8.0\FluentValidation.dll
+C:\Users\User\RiderProjects\VibeTools.Api\VibeTools.Api\bin\Debug\net8.0\FluentValidation.AspNetCore.dll
+C:\Users\User\RiderProjects\VibeTools.Api\VibeTools.Api\bin\Debug\net8.0\FluentValidation.DependencyInjectionExtensions.dll
+C:\Users\User\RiderProjects\VibeTools.Api\VibeTools.Api\bin\Debug\net8.0\Microsoft.Extensions.Caching.StackExchangeRedis.dll
+C:\Users\User\RiderProjects\VibeTools.Api\VibeTools.Api\bin\Debug\net8.0\Pipelines.Sockets.Unofficial.dll
+C:\Users\User\RiderProjects\VibeTools.Api\VibeTools.Api\bin\Debug\net8.0\StackExchange.Redis.dll
+C:\Users\User\RiderProjects\VibeTools.Api\VibeTools.Api\obj\Debug\net8.0\VibeTools.Api.sourcelink.json

@@ -3,7 +3,7 @@
 import {useEffect, useState} from 'react';
 import {fetchTool, submitReview} from '@/lib/api';
 import {useParams, useRouter} from 'next/navigation';
-import {Tool, Review} from '@/types';
+import {Tool, Review, ReviewCreateErrors, ServerErrorResponse} from '@/types';
 import StarRating from "@/components/star-rating";
 import {Label} from "@/components/ui/label";
 import {Button} from "@/components/ui/button";
@@ -19,6 +19,7 @@ export default function ToolDetailsPage() {
     const [rating, setRating] = useState(1);
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [errors, setErrors] = useState<ReviewCreateErrors>({});
 
     useEffect(() => {
         fetchTool(toolId).then((data) => {
@@ -28,16 +29,35 @@ export default function ToolDetailsPage() {
     }, [toolId]);
 
     const handleSubmit = async () => {
-        if (comment.trim() === '') {
-            alert('Please enter a comment.');
+        const newErrors: typeof errors = {};
+
+        if (!comment.trim()) {
+            newErrors.comment = 'Comment cannot be empty.';
+        }
+
+        if (rating < 1 || rating > 5) {
+            newErrors.rating = 'Rating must be between 1 and 5.';
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
             return;
         }
 
-        await submitReview(toolId, {rating, comment});
-        fetchTool(toolId).then(setTool);
-        setComment('');
-        setRating(0);
-        setSubmitted(true);
+        try {
+            await submitReview(toolId, {rating, comment});
+            fetchTool(toolId).then(setTool);
+            setComment('');
+            setRating(0);
+            setErrors({});
+            setSubmitted(true);
+        } catch (error:any) {
+            if (error?.response?.status === 400 && error.response.data) {
+                setErrors(error.response.data);
+            } else {
+                setErrors({server: 'Something went wrong. Please try again.'});
+            }
+        }
     };
 
     if (loading) return (
@@ -65,6 +85,7 @@ export default function ToolDetailsPage() {
                 <div className="font-semibold">Add a Review</div>
                 <div className="space-y-4 mt-4">
                     <StarRating value={rating} onChange={setRating} readOnly={submitted}/>
+                    {errors.rating && <p className="text-red-600 text-sm mt-1">{errors.rating}</p>}
                     <div>
                         <Label className="mb-2" htmlFor="comment">Your thoughts...</Label>
                         <Textarea
@@ -75,12 +96,14 @@ export default function ToolDetailsPage() {
                             onChange={(e) => setComment(e.target.value)}
                             placeholder="Your thoughts..."
                         />
+                        {errors.comment && <p className="text-red-600 text-sm mt-1">{errors.comment}</p>}
                     </div>
                     <div className="flex justify-end w-full">
                         <Button onClick={handleSubmit} disabled={submitted}>
                             Submit Review
                         </Button>
                     </div>
+                    {errors.server && <p className="text-red-600 text-sm mt-2">{errors.server}</p>}
                     {submitted && <p className="text-green-600 mt-4">Review submitted successfully!</p>}
                 </div>
             </div>

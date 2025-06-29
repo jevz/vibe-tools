@@ -1,8 +1,11 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using VibeTools.Api.Data;
 using VibeTools.Api.Interfaces;
 using VibeTools.Api.Repositories;
 using VibeTools.Api.Routes;
+using VibeTools.Api.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +26,10 @@ builder.Services.AddDbContext<VibeToolsContext>(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<ToolValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ReviewValidator>();
 
 builder.Services.AddScoped<IToolRepository, ToolRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
