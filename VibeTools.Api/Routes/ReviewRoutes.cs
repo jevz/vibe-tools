@@ -11,6 +11,7 @@ public static class ReviewRoutes
     {
         app.MapPost("/tools/{id}/reviews", async (int id, Review review, IReviewRepository repo, IValidator<Review> validator) =>
         {
+            review.ToolId = id;
             var validationResult = await validator.ValidateAsync(review);
             if (!validationResult.IsValid)
             {
@@ -18,7 +19,7 @@ public static class ReviewRoutes
                 return Results.BadRequest(errors);
             }
             
-            var reviewResult = await repo.CreateReviewForToolAsync(id, review);
+            var reviewResult = await repo.CreateReviewForToolAsync(review);
             return reviewResult == null ? Results.NotFound() : Results.Ok(reviewResult);
         });
     }

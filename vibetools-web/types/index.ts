@@ -28,3 +28,10 @@ export interface ReviewCreateErrors {
     rating?: string;
     server?: string
 }
+
+export interface ApiErrorResponse<T> {
+    response: {
+        status: number;
+        data: T;
+    };
+}

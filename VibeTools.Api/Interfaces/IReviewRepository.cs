@@ -4,5 +4,5 @@ namespace VibeTools.Api.Interfaces;
 
 public interface IReviewRepository
 {
-    Task<Review?> CreateReviewForToolAsync(int toolId, Review review);
+    Task<Review?> CreateReviewForToolAsync(Review review);
 }

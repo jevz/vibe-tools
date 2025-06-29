@@ -23,7 +23,6 @@ public static class ToolRoutes
 
         app.MapPost("/tools", async (Tool tool, IToolRepository repo, IValidator<Tool> validator) =>
         {
-            tool = new Tool();
             var validationResult = await validator.ValidateAsync(tool);
             if (!validationResult.IsValid)
             {

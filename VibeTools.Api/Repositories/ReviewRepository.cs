@@ -7,16 +7,15 @@ namespace VibeTools.Api.Repositories;
 
 public class ReviewRepository(VibeToolsContext db, IDistributedCache cache, ILogger<ReviewRepository> logger) : IReviewRepository
 {
-    public async Task<Review?> CreateReviewForToolAsync(int toolId, Review review)
+    public async Task<Review?> CreateReviewForToolAsync(Review review)
     {
-        var tool = await db.Tools.FindAsync(toolId);
+        var tool = await db.Tools.FindAsync(review.ToolId);
         if (tool == null)
         {
-            logger.LogError("Could not find tool with id {id}. Aborting review creation", toolId);
+            logger.LogError("Could not find tool with id {id}. Aborting review creation", review.ToolId);
             return null;
         }
 
-        review.ToolId = toolId;
         review.CreatedAt = DateTime.UtcNow;
 
         db.Reviews.Add(review);

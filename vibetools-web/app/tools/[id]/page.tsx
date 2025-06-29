@@ -3,7 +3,7 @@
 import {useEffect, useState} from 'react';
 import {fetchTool, submitReview} from '@/lib/api';
 import {useParams, useRouter} from 'next/navigation';
-import {Tool, Review, ReviewCreateErrors, ServerErrorResponse} from '@/types';
+import {Tool, Review, ReviewCreateErrors, ApiErrorResponse} from '@/types';
 import StarRating from "@/components/star-rating";
 import {Label} from "@/components/ui/label";
 import {Button} from "@/components/ui/button";
@@ -51,9 +51,10 @@ export default function ToolDetailsPage() {
             setRating(0);
             setErrors({});
             setSubmitted(true);
-        } catch (error:any) {
-            if (error?.response?.status === 400 && error.response.data) {
-                setErrors(error.response.data);
+        } catch (error: unknown) {
+            const serverError = error as ApiErrorResponse<never>;
+            if (serverError?.response?.status === 400 && serverError.response.data) {
+                setErrors(serverError.response.data);
             } else {
                 setErrors({server: 'Something went wrong. Please try again.'});
             }

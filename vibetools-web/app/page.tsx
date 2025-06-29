@@ -80,7 +80,7 @@ export default function HomePage() {
             </div>
 
             {showSubmitModal && (
-                <ToolSubmitModal />
+                <ToolSubmitModal/>
             )}
         </div>
     );

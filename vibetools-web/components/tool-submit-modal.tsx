@@ -10,12 +10,12 @@ import {Label} from '@/components/ui/label';
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
     DialogDescription,
     DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from '@/components/ui/dialog';
-import {Tool, ToolCreateErrors} from "@/types";
+import {ApiErrorResponse, ToolCreateErrors} from "@/types";
 
 export default function ToolSubmitModal() {
     const router = useRouter();
@@ -24,13 +24,14 @@ export default function ToolSubmitModal() {
     const [description, setDescription] = useState('');
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [createdTool, setCreatedTool] = useState<Tool | null>(null);
     const [errors, setErrors] = useState<ToolCreateErrors>({});
 
     // If modal closed, navigate back
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
-        if (!isOpen) router.back();
+        if (!isOpen) {
+            router.back();
+        }
     };
 
     const handleSubmit = async () => {
@@ -41,7 +42,7 @@ export default function ToolSubmitModal() {
         }
 
         if (!description.trim()) {
-            newErrors.name = 'Description cannot be empty.';
+            newErrors.description = 'Description cannot be empty.';
         }
 
         if (Object.keys(newErrors).length > 0) {
@@ -52,12 +53,14 @@ export default function ToolSubmitModal() {
         try {
             setLoading(true);
             const tool = await submitTool({name, description});
-            setCreatedTool(tool)
             setErrors({});
             setSubmitted(true);
-        } catch (error:any) {
-            if (error?.response?.status === 400 && error.response.data) {
-                setErrors(error.response.data);
+
+            router.push(`/tools/${tool.id}`);
+        } catch (error: unknown) {
+            const serverError = error as ApiErrorResponse<never>;
+            if (serverError?.response?.status === 400 && serverError.response.data) {
+                setErrors(serverError.response.data);
             } else {
                 setErrors({server: 'Something went wrong. Please try again.'});
             }
@@ -128,9 +131,6 @@ export default function ToolSubmitModal() {
                 ) : (
                     <DialogFooter>
                         <Button onClick={() => setOpen(false)}>Close</Button>
-                        {submitted && createdTool !== null && (
-                            <Button onClick={() => router.push(`/tools/${createdTool!.id}`)}>View Tool</Button>
-                        )}
                     </DialogFooter>
                 )}
             </DialogContent>
